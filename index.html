@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTORENT - Motorcycle Rental Booking Platform</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏍️</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Terms of Agreement Modal -->
+    <div id="termsModal" class="modal" style="display: none; z-index: 5000;">
+        <div class="modal-content terms-modal-content">
+            <h2 style="text-align: center; color: #667eea;">Terms of Agreement</h2>
+            <div class="terms-content">
+                <h3>MOTORENT - Terms and Conditions</h3>
+                <p><strong>Please read these terms carefully before using our service.</strong></p>
+                
+                <h4>1. Platform Overview</h4>
+                <p>MOTORENT is an online marketplace platform that connects customers with multiple independent motorcycle rental providers. Each provider operates independently and sets their own pricing, terms, and policies.</p>
+                
+                <h4>2. Rental Agreement</h4>
+                <p>By booking a motorcycle through MOTORENT, you enter into a rental agreement with the specific provider who owns the motorcycle. You agree to abide by both MOTORENT's platform terms and the provider's specific terms.</p>
+                
+                <h4>3. Pricing and Rates</h4>
+                <p><strong>Important:</strong> Pricing varies by provider. Each rental provider sets their own rates for different rental durations. The pricing displayed during booking is specific to that provider and may differ from other providers on the platform.</p>
+                <ul>
+                    <li>Pricing is shown clearly before you confirm your booking</li>
+                    <li>Rates may vary based on motorcycle type, provider, and rental duration</li>
+                    <li>Total price is calculated and displayed before booking confirmation</li>
+                    <li>All prices are in Philippine Peso (₱)</li>
+                </ul>
+                
+                <h4>4. Rental Period and Late Returns</h4>
+                <p>You must return the motorcycle on or before the specified return date and time. Late returns will incur additional fees. The late return fee rate (typically ₱100 per hour) is set by each provider and will be clearly displayed in your booking confirmation.</p>
+                
+                <h4>5. Pickup Location</h4>
+                <p>Each provider has their own pickup location. The exact pickup address will be displayed in your booking confirmation. You are responsible for arriving at the correct location at the scheduled pickup time.</p>
+                
+                <h4>6. Requirements</h4>
+                <p>To book a motorcycle, you must provide:</p>
+                <ul>
+                    <li>A valid driver's license or valid government-issued ID</li>
+                    <li>Complete personal information (name, address)</li>
+                    <li>A valid Gmail address</li>
+                    <li>A clear photo of your ID (uploaded or captured)</li>
+                </ul>
+                
+                <h4>7. Responsibility and Liability</h4>
+                <p>You are responsible for the motorcycle during the rental period. Any damage, loss, or theft will be charged according to the provider's policies. MOTORENT acts as a platform facilitator and is not responsible for:</p>
+                <ul>
+                    <li>Accidents, injuries, or damages during the rental period</li>
+                    <li>Disputes between customers and providers</li>
+                    <li>Provider-specific policies or service quality</li>
+                </ul>
+                
+                <h4>8. Provider Terms</h4>
+                <p>Each provider may have additional terms and conditions. By booking with a specific provider, you agree to their terms. Contact the provider directly for any provider-specific questions or concerns.</p>
+                
+                <h4>9. Cancellation and Refunds</h4>
+                <p>Cancellation policies vary by provider. Please review the cancellation terms before confirming your booking. Refund policies are determined by each individual provider.</p>
+                
+                <h4>10. Platform Usage</h4>
+                <p>You agree to use MOTORENT platform responsibly and provide accurate information. False information or misuse of the platform may result in account suspension or legal action.</p>
+                
+                <p style="margin-top: 1.5rem; font-weight: bold; color: #667eea;">By clicking "I Accept", you acknowledge that you have read, understood, and agree to be bound by these terms and conditions, and understand that pricing and policies vary by provider.</p>
+            </div>
+            <div class="terms-buttons">
+                <button class="btn-primary" onclick="acceptTerms()">I Accept</button>
+                <button class="btn-secondary" onclick="declineTerms()">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content (hidden until terms accepted) -->
+    <div id="mainContent" style="display: none;">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-left">
+                <button id="adminDashboardBtn" class="btn-admin-dashboard" onclick="openAdminDashboard()" title="Admin Dashboard" style="display: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Admin</span>
+                </button>
+                <button class="btn-user" onclick="openAdminLoginModal()" title="Admin Login">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <div class="logo">
+                    <img src="logo.png" alt="MOTORENT Logo" class="logo-img">
+                    <h1>MOTORENT</h1>
+                </div>
+            </div>
+            <nav class="nav">
+                <button id="adminLoginBtn" class="btn-admin" onclick="openLoginModal()">Rental Services Login</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2>Find Your Perfect Motorcycle</h2>
+            <p>Connect with multiple rental providers and book motorcycles that fit your needs</p>
+        </div>
+    </section>
+
+    <!-- Rental Providers Section -->
+    <section id="providers" class="providers-section">
+        <div class="container">
+            <h2 class="section-title">Rental Providers</h2>
+            <div id="providersGrid" class="providers-grid">
+                <!-- Provider profiles will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Motorcycles Grid -->
+    <section id="bikes" class="bikes-section">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 class="section-title" style="margin: 0;">Available Motorcycles</h2>
+                <div id="activeProviderFilter" style="display: none; align-items: center; gap: 1rem;">
+                    <span id="activeProviderName" style="font-weight: 600; color: #4CAF50;"></span>
+                    <button class="btn-secondary" onclick="clearProviderFilter()" style="padding: 8px 16px; font-size: 0.9rem;">Show All</button>
+                </div>
+            </div>
+            <div class="filter-bar">
+                <select id="categoryFilter" class="filter-select">
+                    <option value="all">All Categories</option>
+                    <option value="automatic">Automatic</option>
+                    <option value="manual">Manual</option>
+                </select>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search motorcycles...">
+            </div>
+            <div id="bikesGrid" class="bikes-grid">
+                <!-- Motorcycles will be dynamically loaded here -->
+            </div>
+            <div id="paginationContainer" class="pagination-container" style="display: none;">
+                <button id="prevPageBtn" class="btn-secondary" onclick="changePage(-1)">Previous</button>
+                <span id="pageInfo" class="page-info">Page 1 of 1</span>
+                <button id="nextPageBtn" class="btn-secondary" onclick="changePage(1)">Next</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Book Motorcycle</h2>
+            <div id="bikeDetails" class="bike-details">
+                <!-- Bike details will be populated here -->
+            </div>
+            <form id="bookingForm" class="booking-form">
+                <div class="form-group">
+                    <label for="customerName">Complete Name</label>
+                    <input type="text" id="customerName" placeholder="Enter your complete name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail">Gmail</label>
+                    <input type="email" id="customerEmail" placeholder="Enter your Gmail address" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerAddress">Address</label>
+                    <input type="text" id="customerAddress" placeholder="Enter your complete address" required>
+                </div>
+                <div class="form-group">
+                    <label for="idPhoto">License / Valid ID Photo</label>
+                    <div class="id-upload-section">
+                        <input type="file" id="idPhoto" accept="image/*" capture="environment" required>
+                        <button type="button" id="captureBtn" class="btn-capture" onclick="capturePhoto()">📷 Capture Photo</button>
+                    </div>
+                    <div id="idPreview" class="id-preview" style="display: none;">
+                        <img id="idPreviewImg" src="" alt="ID Preview">
+                        <button type="button" class="btn-remove" onclick="removePhoto()">Remove</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pickupDate">Pickup Date</label>
+                    <input type="date" id="pickupDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="pickupTime">Pickup Time</label>
+                    <div class="time-input-group">
+                        <select id="pickupHour" class="time-select" required>
+                            <option value="">Hour</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                        <span>:</span>
+                        <select id="pickupMinute" class="time-select" required>
+                            <option value="">Min</option>
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                        <select id="pickupAmPm" class="time-select" required>
+                            <option value="">AM/PM</option>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="returnDate">Return Date</label>
+                    <input type="date" id="returnDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="returnTime">Return Time</label>
+                    <div class="time-input-group">
+                        <select id="returnHour" class="time-select" required>
+                            <option value="">Hour</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                        <span>:</span>
+                        <select id="returnMinute" class="time-select" required>
+                            <option value="">Min</option>
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                        <select id="returnAmPm" class="time-select" required>
+                            <option value="">AM/PM</option>
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="rentalDuration">Rental Duration</label>
+                    <div id="rentalDuration" class="duration-display">-</div>
+                </div>
+                <div class="form-group">
+                    <label for="totalPrice">Total Price</label>
+                    <div id="totalPrice" class="price-display">₱0.00</div>
+                </div>
+                <div class="form-group">
+                    <label class="late-fee-note">⚠️ Late return fee: ₱100 per hour</label>
+                </div>
+                <button type="submit" class="btn-primary">Confirm Booking</button>
+            </form>
+            
+            <!-- Hidden video element for camera capture -->
+            <video id="video" autoplay style="display: none;"></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirm Booking</h2>
+            <div id="confirmationDetails" class="confirmation-details">
+                <!-- Booking details will be populated here -->
+            </div>
+            <div class="confirmation-buttons">
+                <button class="btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                <button class="btn-primary" onclick="confirmBooking()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content success-content">
+            <span class="close">&times;</span>
+            <div class="success-icon">✓</div>
+            <h2>Booking Confirmed!</h2>
+            <p id="successMessage"></p>
+            <button class="btn-primary" onclick="closeSuccessModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal (for Super Admin only) -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Super Admin Login</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Login as Super Admin</p>
+            <form id="adminLoginForm" class="booking-form">
+                <div class="form-group">
+                    <label for="adminLoginUsername">Username</label>
+                    <input type="text" id="adminLoginUsername" placeholder="Enter super admin username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminLoginPassword">Password</label>
+                    <input type="password" id="adminLoginPassword" placeholder="Enter super admin password" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rental Services Login Modal (for Rental Providers only) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Rental Services Login</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Login as a Rental Provider</p>
+            <form id="loginForm" class="booking-form">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <div style="text-align: center; margin-top: 1rem;">
+                <p style="color: #666; margin-bottom: 0.5rem;">Don't have an account?</p>
+                <button type="button" class="btn-secondary" onclick="openSignUpModal()" style="width: 100%;">Sign Up as Rental Provider</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register as Rental Provider</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                Create an account to become a rental provider. Your application will be reviewed by Super Admin for approval.
+            </p>
+            <form id="signUpForm" class="booking-form">
+                <div class="form-group">
+                    <label for="signUpUsername">Username</label>
+                    <input type="text" id="signUpUsername" placeholder="Enter username" required>
+                    <small style="color: #666; font-size: 0.85rem;">Note: "admin" is reserved for super admin</small>
+                </div>
+                <div class="form-group">
+                    <label for="signUpEmail">Email</label>
+                    <input type="email" id="signUpEmail" placeholder="Enter your email address" required>
+                    <small style="color: #666; font-size: 0.85rem;">This will be used for account notifications</small>
+                </div>
+                <div class="form-group">
+                    <label for="signUpPassword">Password</label>
+                    <input type="password" id="signUpPassword" placeholder="Enter password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signUpConfirmPassword">Confirm Password</label>
+                    <input type="password" id="signUpConfirmPassword" placeholder="Confirm password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signUpLocation">Pickup Location</label>
+                    <input type="text" id="signUpLocation" placeholder="Enter your rental service location/address" required>
+                    <small style="color: #666; font-size: 0.85rem;">This will be shown to customers when they book your motorcycles</small>
+                </div>
+                <div class="form-group">
+                    <label for="signUpLicense">Driver's License (Front)</label>
+                    <input type="file" id="signUpLicense" accept="image/*" required>
+                    <small style="color: #666; font-size: 0.85rem;">Upload the front side of your driver's license</small>
+                </div>
+                <div class="form-group">
+                    <label for="signUpValidId">Driver's License (Back)</label>
+                    <input type="file" id="signUpValidId" accept="image/*" required>
+                    <small style="color: #666; font-size: 0.85rem;">Upload the back side of your driver's license</small>
+                </div>
+                <button type="submit" class="btn-primary">Submit Application</button>
+            </form>
+            <p style="text-align: center; color: #666; margin-top: 1rem; font-size: 0.9rem; font-style: italic;">
+                ⚠️ Your application will be pending until approved by Super Admin. You will be notified once your account is reviewed.
+            </p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div id="adminDashboardModal" class="modal">
+        <div class="modal-content" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+            <span class="close">&times;</span>
+            <h2>Admin Dashboard - Account Management</h2>
+            <div id="adminDashboardContent">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <h3>Total Accounts</h3>
+                        <p id="totalAccountsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Approval</h3>
+                        <p id="pendingAccountsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Approved</h3>
+                        <p id="approvedAccountsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Blocked</h3>
+                        <p id="blockedAccountsCount">0</p>
+                    </div>
+                </div>
+                <div id="accountsList" class="accounts-list">
+                    <!-- Accounts will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">About MOTORENT</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        <strong>MOTORENT</strong> is a comprehensive online marketplace platform that connects customers with 
+                        multiple independent motorcycle rental providers. Our platform serves as a centralized booking system 
+                        where customers can browse, compare, and book motorcycles from various rental providers, each with their 
+                        own inventory, pricing, and pickup locations.
+                    </p>
+                    <p>
+                        For rental providers, MOTORENT offers a complete management system to manage your motorcycle inventory, 
+                        track bookings, view analytics, and grow your rental business. All rental provider accounts are 
+                        managed and approved through our Super Admin system to ensure quality and reliability.
+                    </p>
+                </div>
+                
+                <div class="about-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="6" cy="17" r="3"></circle>
+                                <circle cx="18" cy="17" r="3"></circle>
+                                <path d="M9 17h6"></path>
+                                <path d="M9 5h6v12H9z"></path>
+                                <path d="M9 5L7 3h10l-2 2"></path>
+                            </svg>
+                        </div>
+                        <h3>Multiple Rental Providers</h3>
+                        <p>Browse and compare motorcycles from various independent rental providers all in one platform. Each provider operates independently with their own inventory and pricing.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </div>
+                        <h3>Easy Search & Filter</h3>
+                        <p>Search motorcycles by name, filter by transmission type (Automatic or Manual), and filter by specific rental providers to find exactly what you need.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                            </svg>
+                        </div>
+                        <h3>Simple Booking Process</h3>
+                        <p>Book motorcycles in minutes with our streamlined process. Upload your valid ID, select pickup and return dates, and get instant confirmation.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                        <h3>Secure ID Verification</h3>
+                        <p>Upload or capture a photo of your valid driver's license or government-issued ID during booking for secure verification and compliance.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <h3>Provider Locations</h3>
+                        <p>Each rental provider has their own pickup location. View provider profiles to see their location and choose the most convenient option for you.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3>Rental Provider Dashboard</h3>
+                        <p>Rental providers can manage their motorcycle inventory, track ongoing and returned bookings, view analytics, and update their profile through a comprehensive dashboard.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24-4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24 4.24"></path>
+                            </svg>
+                        </div>
+                        <h3>Super Admin Management</h3>
+                        <p>Our platform includes a Super Admin system to manage and approve rental provider accounts, ensuring quality service and platform integrity.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <h3>Flexible Pricing</h3>
+                        <p>Each rental provider sets their own pricing. Pricing varies by provider and rental duration, giving you options to find the best deal for your needs.</p>
+                    </div>
+                </div>
+                
+                <div class="about-note">
+                    <p>
+                        <strong>Important Notes:</strong>
+                    </p>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: #856404;">
+                        <li>Late returns are subject to additional fees (typically ₱100 per hour) as set by each provider</li>
+                        <li>Each rental provider operates independently with their own terms, pricing, and policies</li>
+                        <li>Rental provider accounts require approval from Super Admin before they can operate on the platform</li>
+                        <li>All bookings require valid ID verification for security and compliance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section / Submit Ticket -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Submit a Ticket</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 2rem; font-size: 1.1rem;">
+                For rental provider concerns and inquiries. Submit a ticket and we'll get back to you.
+            </p>
+            <div style="max-width: 600px; margin: 0 auto;">
+                <form id="ticketForm" class="booking-form">
+                    <div class="form-group">
+                        <label for="ticketName">Your Name</label>
+                        <input type="text" id="ticketName" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketEmail">Your Email</label>
+                        <input type="email" id="ticketEmail" placeholder="Enter your email address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketSubject">Subject</label>
+                        <input type="text" id="ticketSubject" placeholder="Brief description of your concern" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketMessage">Message</label>
+                        <textarea id="ticketMessage" rows="5" placeholder="Describe your concern or inquiry in detail..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Submit Ticket</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 MOTORENT. All rights reserved.</p>
+        </div>
+    </footer>
+    </div> <!-- End of mainContent -->
+
+    <!-- Admin Page (shown when admin is logged in) -->
+    <div id="adminPage" class="admin-page" style="display: none;">
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <img src="logo.png" alt="MOTORENT Logo" class="logo-img">
+                    <h1>MOTORENT - Admin Panel</h1>
+                </div>
+                <nav class="nav">
+                    <button class="btn-admin" onclick="adminLogout()">Logout</button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showAdminTab('bookings')">Bookings</button>
+                <button class="tab-btn" onclick="showAdminTab('motorcycles')">Motorcycles</button>
+                <button class="tab-btn" onclick="showAdminTab('analytics')">Analytics</button>
+                <button class="tab-btn" onclick="showAdminTab('profile')">Profile</button>
+            </div>
+
+            <!-- Bookings Tab -->
+            <div id="bookingsTab" class="admin-tab-content active">
+                <div class="dashboard-header">
+                    <h2>Bookings Management</h2>
+                    <p id="bookingsCount">Total Bookings: 0</p>
+                </div>
+                <div class="bookings-sub-tabs">
+                    <button class="sub-tab-btn active" onclick="showBookingsSubTab('ongoing')">Ongoing</button>
+                    <button class="sub-tab-btn" onclick="showBookingsSubTab('returned')">Returned</button>
+                </div>
+                <div style="margin: 1rem 0;">
+                    <input type="text" id="bookingsSearchInput" class="filter-select" placeholder="Search by customer name, email, or motorcycle..." style="width: 100%; max-width: 500px;" oninput="filterBookings()">
+                </div>
+                <div id="ongoingBookingsList" class="bookings-list">
+                    <!-- Ongoing bookings will be dynamically loaded here -->
+                </div>
+                <div id="returnedBookingsList" class="bookings-list" style="display: none;">
+                    <!-- Returned bookings will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Motorcycles Tab -->
+            <div id="motorcyclesTab" class="admin-tab-content">
+                <div class="dashboard-header">
+                    <h2>Motorcycle Management</h2>
+                    <button class="btn-primary" onclick="openAddMotorcycleModal()">+ Add Motorcycle</button>
+                </div>
+                <div id="motorcyclesList" class="motorcycles-list">
+                    <!-- Motorcycles will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analyticsTab" class="admin-tab-content">
+                <div class="dashboard-header">
+                    <h2>Analytics Dashboard</h2>
+                </div>
+                <div id="analyticsContent" class="analytics-content">
+                    <!-- Analytics will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profileTab" class="admin-tab-content">
+                <div class="dashboard-header">
+                    <h2>My Profile</h2>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-section">
+                        <h3>Profile Photo</h3>
+                        <div class="profile-photo-section">
+                            <div id="profilePhotoPreview" class="profile-photo-preview" style="display: none;">
+                                <img id="profilePhotoPreviewImg" src="" alt="Profile Photo">
+                                <button type="button" class="btn-remove" onclick="removeProfilePhoto()">Remove</button>
+                            </div>
+                            <div id="profilePhotoPlaceholder" class="profile-photo-placeholder">
+                                <div class="profile-photo-icon">👤</div>
+                                <p>No profile photo</p>
+                            </div>
+                            <div class="profile-photo-actions">
+                                <input type="file" id="profilePhoto" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload(event)">
+                                <button type="button" class="btn-primary" onclick="document.getElementById('profilePhoto').click()">Upload Photo</button>
+                                <button type="button" class="btn-secondary" onclick="captureProfilePhoto()">Capture Photo</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-section">
+                        <h3>Account Information</h3>
+                        <div class="profile-info">
+                            <div class="profile-info-item">
+                                <label>Username:</label>
+                                <span id="profileUsername">-</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <label>Account Created:</label>
+                                <span id="profileCreatedDate">-</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <label>Total Motorcycles:</label>
+                                <span id="profileMotorcyclesCount">0</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <label>Total Bookings:</label>
+                                <span id="profileBookingsCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Super Admin Page (shown when super admin is logged in) -->
+    <div id="superAdminPage" class="admin-page" style="display: none;">
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <img src="logo.png" alt="MOTORENT Logo" class="logo-img">
+                    <h1>MOTORENT - Super Admin Panel</h1>
+                </div>
+                <nav class="nav">
+                    <button id="superAdminNotificationBtn" class="btn-admin" onclick="openTicketsModal()" style="position: relative;">
+                        <span>Notifications</span>
+                        <span id="ticketNotificationBadge" class="notification-badge" style="display: none;">0</span>
+                    </button>
+                    <button class="btn-admin" onclick="superAdminLogout()">Logout</button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <div class="dashboard-header">
+                <h2>Account Management Dashboard</h2>
+                <p>Manage all rental provider accounts</p>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <input type="text" id="superAdminSearchInput" class="search-input" placeholder="Search by username, email, or location..." style="max-width: 500px; width: 100%;">
+            </div>
+            <div id="superAdminDashboardContent">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <h3>Total Accounts</h3>
+                        <p id="superAdminTotalAccountsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Approval</h3>
+                        <p id="superAdminPendingAccountsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Approved</h3>
+                        <p id="superAdminApprovedAccountsCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Blocked</h3>
+                        <p id="superAdminBlockedAccountsCount">0</p>
+                    </div>
+                </div>
+                <div id="superAdminAccountsList" class="accounts-list">
+                    <!-- Accounts will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Motorcycle Modal (accessible from both homepage and admin page) -->
+    <div id="addMotorcycleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="motorcycleModalTitle">Add New Motorcycle</h2>
+            <form id="addMotorcycleForm" class="booking-form">
+                <input type="hidden" id="editBikeId" value="">
+                <div class="form-group">
+                    <label for="bikeName">Motorcycle Name</label>
+                    <input type="text" id="bikeName" placeholder="e.g., Yamaha R1" required>
+                </div>
+                <div class="form-group">
+                    <label for="bikeTransmission">Transmission Type</label>
+                    <select id="bikeTransmission" required>
+                        <option value="">Select transmission type</option>
+                        <option value="automatic">Automatic</option>
+                        <option value="manual">Manual</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bikeAvailability">Available Quantity</label>
+                    <input type="number" id="bikeAvailability" placeholder="How many available?" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="bikePhoto">Motorcycle Photo</label>
+                    <div class="id-upload-section">
+                        <input type="file" id="bikePhoto" accept="image/*" capture="environment">
+                        <button type="button" id="captureBikeBtn" class="btn-capture" onclick="captureBikePhoto()">📷 Capture Photo</button>
+                    </div>
+                    <div id="bikePhotoPreview" class="id-preview" style="display: none;">
+                        <img id="bikePhotoPreviewImg" src="" alt="Motorcycle Preview" style="max-width: 300px; max-height: 200px;">
+                        <button type="button" class="btn-remove" onclick="removeBikePhoto()">Remove</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="motorcycleSubmitBtn">Add Motorcycle</button>
+            </form>
+            
+            <!-- Hidden video element for camera capture -->
+            <video id="bikeVideo" autoplay style="display: none;"></video>
+            <canvas id="bikeCanvas" style="display: none;"></canvas>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal (accessible from both homepage and admin page) -->
+    <div id="bookingDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Booking Details</h2>
+            <div id="bookingDetailsContent" class="booking-details-content">
+                <!-- Booking details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tickets Modal (Super Admin) -->
+    <div id="ticketsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <span class="close">&times;</span>
+            <h2>Support Tickets</h2>
+            <div class="tickets-tabs">
+                <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+                    <button class="ticket-tab active" onclick="switchTicketTab('unread')" id="unreadTab">
+                        Unread <span id="unreadCount" class="tab-count">0</span>
+                    </button>
+                    <button class="ticket-tab" onclick="switchTicketTab('read')" id="readTab">
+                        Read <span id="readCount" class="tab-count">0</span>
+                    </button>
+                </div>
+                <button id="deleteAllReadBtn" class="btn-delete-all" onclick="deleteAllReadTickets()" style="display: none;">
+                    Delete All Read
+                </button>
+            </div>
+            <div id="ticketsList" class="tickets-list">
+                <!-- Tickets will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="api/api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
