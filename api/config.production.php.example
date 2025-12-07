@@ -1,0 +1,51 @@
+<?php
+/**
+ * Production Configuration Template for Hostinger
+ * 
+ * INSTRUCTIONS:
+ * 1. Copy this file to config.php
+ * 2. Replace the placeholder values with your actual Hostinger database credentials
+ * 3. Never commit the actual config.php file to version control
+ */
+
+// Database Configuration for Hostinger
+// Get these from: Hostinger hPanel → Databases → MySQL Databases
+define('DB_HOST', 'localhost'); // Usually 'localhost' on Hostinger (check your panel)
+define('DB_USER', 'u123456789_admin'); // Your database username from Hostinger
+define('DB_PASS', 'your_database_password_here'); // Your database password
+define('DB_NAME', 'u123456789_motorent'); // Your database name from Hostinger
+
+// Create database connection
+function getDBConnection() {
+    try {
+        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        
+        if ($conn->connect_error) {
+            die(json_encode([
+                'success' => false,
+                'error' => 'Database connection failed: ' . $conn->connect_error
+            ]));
+        }
+        
+        $conn->set_charset("utf8mb4");
+        return $conn;
+    } catch (Exception $e) {
+        die(json_encode([
+            'success' => false,
+            'error' => 'Database error: ' . $e->getMessage()
+        ]));
+    }
+}
+
+// Set headers for JSON response
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+

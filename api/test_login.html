@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Debug Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #667eea;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        .success {
+            border-left-color: #4CAF50;
+            background: #e8f5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login Debug Tool</h1>
+        <p>Use this tool to debug login issues and check account information.</p>
+        
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password (optional, for testing):</label>
+            <input type="password" id="password" placeholder="Enter password to test">
+        </div>
+        
+        <button onclick="checkAccount()">Check Account</button>
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="listAllAccounts()">List All Accounts</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function checkAccount() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                showResult('Please enter a username', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`debug_login.php?username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+                showResult(JSON.stringify(data, null, 2), data.found ? 'success' : 'error');
+            } catch (error) {
+                showResult('Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showResult('Please enter both username and password', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+                const data = await response.json();
+                showResult(JSON.stringify(data, null, 2), data.success ? 'success' : 'error');
+            } catch (error) {
+                showResult('Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function listAllAccounts() {
+            try {
+                const response = await fetch('accounts.php');
+                const data = await response.json();
+                if (data.success && data.data) {
+                    const accounts = data.data.map(acc => ({
+                        username: acc.username,
+                        email: acc.email,
+                        status: acc.status,
+                        created_at: acc.created_at
+                    }));
+                    showResult(JSON.stringify(accounts, null, 2), 'success');
+                } else {
+                    showResult(JSON.stringify(data, null, 2), 'error');
+                }
+            } catch (error) {
+                showResult('Error: ' + error.message, 'error');
+            }
+        }
+        
+        function showResult(message, type = '') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result ' + type;
+            resultDiv.innerHTML = '<pre>' + message + '</pre>';
+        }
+    </script>
+</body>
+</html>
+

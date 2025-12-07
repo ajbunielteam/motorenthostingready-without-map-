@@ -1,0 +1,37 @@
+<?php
+/**
+ * Email Configuration Template for Production (Hostinger)
+ * 
+ * INSTRUCTIONS:
+ * 1. Copy this file to email_config.php
+ * 2. Replace the placeholder values with your actual Gmail credentials
+ * 3. Never commit the actual email_config.php file to version control
+ * 
+ * Gmail App Password Setup:
+ * 1. Go to Google Account → Security
+ * 2. Enable 2-Step Verification (if not already enabled)
+ * 3. Go to App Passwords (under 2-Step Verification)
+ * 4. Select "Mail" and your device
+ * 5. Generate the 16-character password
+ * 6. Use that password below (spaces will be removed automatically)
+ */
+
+// Gmail SMTP Configuration
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USERNAME', 'your_email@gmail.com'); // Your Gmail address
+define('SMTP_PASSWORD', 'your_app_password_here'); // Gmail App Password (16 characters, spaces removed automatically)
+define('SMTP_FROM_EMAIL', 'your_email@gmail.com'); // Usually same as SMTP_USERNAME
+define('SMTP_FROM_NAME', 'MOTORENT Admin');
+
+// Enable/Disable email notifications
+define('EMAIL_ENABLED', true);
+
+// Test email function
+function testEmailConfig() {
+    if (empty(SMTP_PASSWORD)) {
+        return ['success' => false, 'error' => 'SMTP password not configured. Please set SMTP_PASSWORD in email_config.php'];
+    }
+    return ['success' => true];
+}
+
